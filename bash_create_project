@@ -1,0 +1,122 @@
+gem intall git-simple-pair
+gem install bundler
+
+cd ~/Desktop
+mkdir project_name
+cd project_name
+mkdir spec lib public views
+touch create_database.rb Gemfile app.rb README.md
+
+echo "require('pg')
+GUEST_DB = PG.connect({:dbname => "Guest"})
+
+GUEST_DB.exec("CREATE DATABASE project_name;")
+PROJECT_DB = PG.connect({:dbname => "project_name"})
+PROJECT_DB.exec("CREATE TABLE table_one (id serial PRIMARY KEY, name varchar);")
+PROJECT_DB.exec("CREATE TABLE table_two (id serial PRIMARY KEY, name varchar);")
+PROJECT_DB.exec("CREATE DATABASE project_name_test WITH TEMPLATE hair_salon;")
+
+# GUEST_DB.exec("DROP DATABASE project_name;")
+# GUEST_DB.exec("DROP DATABASE project_name_test;")" >> create_databse.rb
+
+echo "require('pg')
+require('sinatra')
+require('sinatra/reloader')
+also_reload('/lib/**/*.rb')
+require('./lib/stylist')
+require('./lib/client')
+
+DB = PG.connect({:dbname => 'project_name'})
+
+get ('/') do
+  erb(:index)
+end" >> app.rb
+
+echo "source('https://rubygems.org')
+
+gem('sinatra')
+gem('sinatra-contrib')
+gem('pg')
+gem('rspec')
+gem('pry')" >> Gemfile
+
+echo "project_name
+=================
+
+by Gabe Finch
+
+project_name is...
+
+Installation
+------------
+
+Install Hair Salon by first cloning the repository.
+```
+$ git clone http://github.com/gabefinch/project_name.git
+```
+
+Install all of the required gems:
+```
+$ bundle install
+```
+
+Start postgres:
+```
+$ postgres
+```
+
+Create the databases and tables by running the following:
+```
+$ ruby create_database.rb
+```
+
+License
+-------
+
+GNU GPL v2. Copyright 2015 Gabe Finch" >> README.md
+
+cd spec
+touch project_name_spec.rb
+touch spec_helper.rb
+
+echo "require('spec_helper')
+
+describe() do
+  describe('#') do
+    it("") do
+      expect().to(eq())
+    end
+  end
+end" >> to_do_spec.rb
+
+echo "require('rspec')
+require('pg')
+require('pry')
+require('./lib/client')
+require('./lib/stylist')
+
+DB = PG.connect({ :dbname => 'proj_test' })
+
+RSpec.configure do |config|
+  config.after(:each) do
+    DB.exec("DELETE FROM clients *;")
+    DB.exec("DELETE FROM stylists *;")
+  end
+end" >> spec_helper.rb
+
+cd ../lib
+touch project_name.rb
+echo "class Generic
+
+  attr_reader(:id, :name)
+
+  define_method(:initialize) do |attributes|
+    @name = attributes.fetch(:name)
+    @id = attributes[:id]
+  end
+  end" >> project_name.rb
+
+cd ../views
+touch layout.erb index.erb
+cd ..
+bundle
